@@ -9,7 +9,7 @@ public class ComputerDemo {
         Memory memory = new KingstonMemory();
         CPU cpu = new IntelCPU();
 
-        
+
         c.setCpu(cpu);
         c.setHardDisk(hardDisk);
         c.setMemory(memory);
