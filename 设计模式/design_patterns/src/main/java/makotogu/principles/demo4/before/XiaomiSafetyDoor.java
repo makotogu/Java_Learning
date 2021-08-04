@@ -1,6 +1,6 @@
 package makotogu.principles.demo4.before;
 
-public class XiaomiSafetyDoor implements SafetyDoor{
+public class XiaoMiSafetyDoor implements SafetyDoor{
 
     @Override
     public void antiTheft() {
