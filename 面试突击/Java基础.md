@@ -122,3 +122,44 @@ public class SuperSuperMan extends SuperMan {
 1. 子类拥有父类对象所有的属性和方法(包括私有属性和私有方法)，但是父类中的私有属性和方法子类是无法访问，**只是拥有**
 2. 子类可以拥有自己属性和方法，即子类可以对父类进行扩展
 3. 子类可以用自己的方式实现父类的方法
+
+## 多态
+所谓多态就是指程序中定义的引用变量所指向的具体类型和通过该引用变量发出的方法调用在编程时并不确定，而是在程序运行期间才确定，即一个引用变量到底会指向哪个类的实例对象，该引用变量发出的方法调用到底是哪个类中实现的方法，必须在由程序运行期间才能决定。
+
+在Java中有两种形式可以实现多态：继承(多个子类对同一方法的重写)和接口(实现接口并覆盖接口中同一方法)。
+
+# String StringBuffer 和 StringBuilder 的区别是什么? String 为什么是不可变的?
+## 可变性
+简单的来说：String类中使用final关键字修饰字符数组来保存字符串，private final char value[]，所以说String对象时不可变的
+> 在Java9之后，String类的实现改用byte数组来存储字符串 private final byte[] value
+而StringBuilder 与 StringBuffer 都继承自AbstractStringBuilder类，在AbstractStringBuilder中也是使用字符数组保存字符串char[] value 但是没有用final关键字修饰， 所以这两种对象都可变的。
+
+StringBuilder 与 StringBuffer 的构造方法都是调用父类构造方法也就是AbstractStringBuilder实现的。
+## 线程安全性
+String 中的对象是不可变的，也就可以理解为常量，线程安全。AbstractStringBuilder 是 StringBuilder 与 StringBuffer 的公共父类，定义了一些字符串的基本操作，如expandCapacity、 append、 insert、 indexOf 等公共方法。StringBuffer对方法加了同步锁或者对调用的方法加了同步锁，所以是线程安全的。StringBuilder 并没有对方法进行加同步锁，所以是非线程安全的。
+## 性能
+每次对String类型进行改变的时候，都会产生一个新的String对象，然后将指针指向新的String对象。StringBuffer每次都会对StringBuffer对象本身进行操作，而不是生成新的对象并改变对象 引用。相同情况下使用 StringBuilder 相比使用 StringBuffer 仅能获得 10%~15% 左右的性能提升，但却要冒多线程不安全的⻛险。
+## 对于三者使用的总结
+1. 操作少量数据：适用String
+2. 单线程操作字符串缓冲区下操作大量数据：适用StringBuilder
+3. 多线程操作字符串缓冲区下操作大量数据：适用StringBuffer
+
+# 自动装箱与拆箱
+* 装箱：将基本类型用它们对应的引用类型包装起来
+* 拆箱：将包装类型转换为基本数据类型
+## 例题
+``` java
+public class Main {
+    public static void main(String[] args) {
+         
+        Integer i1 = 100;
+        Integer i2 = 100;
+        Integer i3 = 200;
+        Integer i4 = 200;
+         
+        System.out.println(i1==i2); //true
+        System.out.println(i3==i4); //false
+    }
+}
+```
+* Integer中有valueOf方法，在通过valueOf方法创建Integer对象的时候，如果数值在[-128,127]之间，便返回指向IntegerCache.cache中已经存在的对象的引用；否则创建一个新的Integer对象。
