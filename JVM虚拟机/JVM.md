@@ -186,3 +186,21 @@ Direct Memory
    优点：不会有内存碎片 
    缺点：占用双倍的内存空间
 ## 分代回收
+* 对象首先会分配在伊甸园区
+* 新生代空间不足够会出发minor gc， 伊甸园和from存活对象使用copy存放到to中，存活对象的年龄加一，并且交换from to
+* minor gc 会引发STW(stop the world),暂停其他的用户的线程，等垃圾回收结束，用户线程才恢复运行
+* 当对象寿命超过阈值时，会晋升为老年代，最大寿命是15（4bit）
+* 当老年代空间不够，会尝试触发minor gc，如果空间依旧不够，会出发full gc， STW的时间更长
+
+## 相关VM参数
+|        含义        |                             参数                             |
+| :----------------: | :----------------------------------------------------------: |
+|     堆初始大小     |                             -Xms                             |
+|     堆最大大小     |                 -Xmx 或 -XX:MaxHeapSize=size                 |
+|     新生代大小     |        -Xmn 或 -XX:NewSize=size + -XX:MaxNewSize=size        |
+| 幸存区比例（动态） | -XX:InitialSurvivorRatio=ratio 和 -XX:+UseAdaptiveSizePolicy |
+|     幸存区比例     |                   -XX:SurvivorRatio=ratio                    |
+|      晋升阈值      |              -XX:MaxTenuringThreshold=threshold              |
+|      晋升详情      |                -XX:+PrintTenuringDistribution                |
+|       GC详情       |               -XX:+PrintGCDetails -verbose:gc                |
+|  FullGC前 MinorGC  |                  -XX:+ScavengeBeforeFullGC                   |
