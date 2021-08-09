@@ -204,3 +204,32 @@ Direct Memory
 |      晋升详情      |                -XX:+PrintTenuringDistribution                |
 |       GC详情       |               -XX:+PrintGCDetails -verbose:gc                |
 |  FullGC前 MinorGC  |                  -XX:+ScavengeBeforeFullGC                   |
+
+
+# 垃圾回收器
+1. 串行
+   * 单线程
+     * 对内存较小，cpu核心数少（适合个人电脑）
+2. 吞吐量优先
+   * 多线程
+     * 堆内存大，多核cpu
+   * 单位时间内STW时间尽可能短  少餐多食
+3. 响应时间优先
+   * 多线程
+     * 堆内存较大，多核cpu
+   * STW单次的时间尽可能短  少食多餐
+## 串行
+-XX:+UseSerialGC=Serial + SerialOld
+> Serial 复制算法
+> SerialOld 老年代 标记整理算法
+## 吞吐量优先的垃圾回收器
+-XX:+UseParallelGC~ -XX:+UseParallelOldGC  //标记加整理 开启一个会连带开启另一个
+-XX:+UseAdaptiveSizePolicy //采用一个自适应的大小策略
+-XX:GCTimeRatio=ratio //调整吞吐量 垃圾回收的时间和总时间的占比
+-XX:MaxGCPauseMillis=ms //默认值200ms 
+-XX:ParallelGCThreads=n
+## 响应时间优先
+-XX:+UseConcMarkSweepGC ~ -XX:+UseParNewGC ~SerialOld  //CMS垃圾回收器在某些时刻起到并发的效果 //UP是新生代的 //并发失败会使用SerialOld来补救（标记整理）
+-XX:ParallelGCThreads=n ~ -XX:ConcGCThreads=threads
+-XX:CMSInitiatingOccupancyyFraction=percent //控制何时进行CMS垃圾回收，执行CMS的内存占比 percen表示一个内存占比
+-XX:+CMSScavengeBeforeRemark //避免重新标记之前，对新生代进行扫描，做完一次回收新生代内容少，将来扫描的对象就少，减轻重新标记的压力
