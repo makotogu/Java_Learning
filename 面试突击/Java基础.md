@@ -274,3 +274,16 @@ public class test1 {
 **说明**
 * String中的equals()方法被重写过，应为object的equals方法是比较对象的内存地址，而String的equals方法比较的是对象的值
 * 当创建String类型的对象时，虚拟机会在常量池中查找有没有已经存在的值和要创建的值相同的对象，如果有就把它赋给当前引用。如果没有就在常量池中重新创建一个String对象
+
+# <font color="#feccfe"> hashCode 与 equals </font>
+
+1. hashCode()介绍：
+   hashCode是获取哈希码（散列码），返回值为一个int整数。这个哈希码的作用是确定对象在哈希表中的索引位置。hashCode()定义在JDK的Object类中，这就意味着Java中的任何类都包含有hashCode()函数。hashCode是一个native方法，使用c和c++实现
+   哈希表存储的是键值对(key-value)，能根据“键”快速的检索出对于的“值”
+2. 为什么要使用hashCode()?
+   以HashSet为例：
+   当把对象加入HashSet是，HashSet会先计算对象的hashCode来判断对象加入的位置，同时也会与其他已经加入的对象的hashCode进行比较，如果没有相符的hashCode，HashSet回家社对象没有重复出现，如果发现相同的hashCode会调用equals()方法，检查对象是否真的1相同，如果相同，就不会让其加入，如果不同就会散列到其他的位置。减少了equals的次数，提高了执行速度。
+> Java的Collection接口被List和Set接口继承，List元素可以重复且有序，Set元素不可以重复且无序
+3. 为什么重写equals()方法时必须重写hashCode()方法？
+   如果两个对象相等，则hashCode一定是相同的，
+4. 为什么两个对象有相同的hashcode值也不一定是相等的？
