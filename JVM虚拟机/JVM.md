@@ -233,3 +233,14 @@ Direct Memory
 -XX:ParallelGCThreads=n ~ -XX:ConcGCThreads=threads
 -XX:CMSInitiatingOccupancyyFraction=percent //控制何时进行CMS垃圾回收，执行CMS的内存占比 percen表示一个内存占比
 -XX:+CMSScavengeBeforeRemark //避免重新标记之前，对新生代进行扫描，做完一次回收新生代内容少，将来扫描的对象就少，减轻重新标记的压力
+
+# G1 
+定义：Garbage First
+适用场景
+* 同事注重吞吐量(Throughput)和低延迟(Low latency),默认的暂停目标是200ms
+* 超大堆内存，会将堆分为多个大小相等的Region
+* 整体上是标记+整理算法，两个区域之间是复制算法
+相关JVM参数
+-XX:+UseG1GC
+-XX:G1HeapRegionSize=size
+-XX:MaxGCPAuseMillis=time
