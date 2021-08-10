@@ -244,3 +244,11 @@ Direct Memory
 -XX:+UseG1GC
 -XX:G1HeapRegionSize=size
 -XX:MaxGCPAuseMillis=time
+## G1垃圾回收阶段
+1. Young Collection
+2. Young Collection + Concurrent Mark
+3. Mixed Collection
+三步依次循环
+
+## Young Collection
+* 会STW
