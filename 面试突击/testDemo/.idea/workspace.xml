@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8723a291-55a8-4e1f-a41b-64da51621533" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/makotogu/CallByValueTest1.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/makotogu/CallByValueTest2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/makotogu/CallByValueTest3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/makotogu/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java基础.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Java基础.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/HashCodeTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/HashCodeTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/HashCodeTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/HashCodeTest.class" afterDir="false" />
-    </list>
+    <list default="true" id="8723a291-55a8-4e1f-a41b-64da51621533" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -50,6 +41,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Desktop/NavigationDemo" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -141,6 +133,7 @@
       <option name="presentableId" value="Default" />
       <updated>1628560008455</updated>
       <workItem from="1628560009897" duration="6516000" />
+      <workItem from="1628574992662" duration="124000" />
     </task>
     <servers />
   </component>
@@ -157,6 +150,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
