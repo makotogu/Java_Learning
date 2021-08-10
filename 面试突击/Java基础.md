@@ -285,5 +285,166 @@ public class test1 {
    当把对象加入HashSet是，HashSet会先计算对象的hashCode来判断对象加入的位置，同时也会与其他已经加入的对象的hashCode进行比较，如果没有相符的hashCode，HashSet回家社对象没有重复出现，如果发现相同的hashCode会调用equals()方法，检查对象是否真的1相同，如果相同，就不会让其加入，如果不同就会散列到其他的位置。减少了equals的次数，提高了执行速度。
 > Java的Collection接口被List和Set接口继承，List元素可以重复且有序，Set元素不可以重复且无序
 3. 为什么重写equals()方法时必须重写hashCode()方法？
-   如果两个对象相等，则hashCode一定是相同的，
+   如果两个对象相等，则hashCode一定是相同的，两个对象相等，对两个对象分别调用equals()方法都返回true。但是两个对象有相同的hashCode值，，两个对象也不一定相等，因此，equals方法被覆盖过，则hashCode方法也要被覆盖。
+> hashCode()的默认行为是对堆上的对象产生独特之，如果没有重写hashCode(),则类的两个对象无论如何都不会相等
 4. 为什么两个对象有相同的hashcode值也不一定是相等的？
+   因为hashCode()所用的杂凑算法也许刚好会让多个对象传回相同的杂凑值。越早搞得杂凑算法越容易碰撞，但这也与数据值域分布的特性有关(所谓碰撞也就是指的是不同的对象得到相同的hashCode)
+> 杂凑(hash)
+``` java
+import org.junit.Test;
+
+public class HashCodeTest {
+
+    /**
+     * 测试hashCode相同的对象是否完全相同
+     * String重写了equals方法
+     */
+    @Test
+    public void test1() {
+        String a = "ab";
+        String b = "ab";
+        String c = a;
+        String d = new String("ab");
+        System.out.println(a == b);
+        System.out.println(a == c);
+
+        System.out.println(a == d);
+        System.out.println(a.equals(d));
+
+        System.out.println(a.hashCode());
+        System.out.println(b.hashCode());
+        System.out.println(c.hashCode());
+        System.out.println(d.hashCode());
+
+        /*
+        * true
+        * true
+        * false
+        * true
+        * 3105
+        * 3105
+        * 3105
+        * 3105
+        * */
+    }
+    /**
+     * 测试hashCode相同的对象是否完全相同
+     * Long也重写了equals
+     */
+    @Test
+    public void test2() {
+        Long a = new Long(111_111_111_111_111_111L);
+        Long b = new Long(111_111_111_111_111_111L);
+        System.out.println(a.hashCode());
+        System.out.println(b.hashCode());
+        System.out.println(a==b);
+        System.out.println(a.equals(b));
+        /*
+        * -2048209104
+        * -2048209104
+        * false
+        * true
+        * */
+
+    }
+}
+
+
+```
+
+
+# 为什么java中只有值传递？
+按值调用(call by value)表示方法接收的调用者提供的值，而按引用调用(call by reference)表示方法接收的是调用者提供的变量地址。一个方法可以修改传递引用所对应的变量值，而不能修改传递值调用锁对应的变量值，而不能修改传递值调用所对应的变量值。
+Java程序设计语言总是采用**按值调用**，也就是说得到的是所有参数值得一个拷贝，方法不能修改传递给它的任何参数变量的内容。  
+``` java
+package makotogu;
+
+/**
+ * 在swap方法中，a,b的值进行交换，并不会影响num1、num2。因为a，b中的值是从num1、num2中复制的，a、b再怎么变也不会影响原始的
+ * 一个方法不能修改一个基本数据类型的参数
+ */
+public class CallByValueTest1 {
+    public static void main(String[] args) {
+        int num1 = 10;
+        int num2 = 20;
+
+        swap(num1, num2);
+
+        System.out.println("num1 = " + num1);
+        System.out.println("num2 = " + num2);
+    }
+
+    public static void swap(int a, int b) {
+        int tmp = a;
+        a = b;
+        b = tmp;
+    }
+}
+```
+```java
+package makotogu;
+
+/**
+ * array 被初始化arr的拷贝也就是一个对象的引用，也就是说array和arr指向的是同一个数组对象。
+ * 因此，外部对引用对象的改变会反映到所对应的对象上
+ */
+public class CallByValueTest2 {
+    public static void main(String[] args) {
+        int[] arr={1,2,3,4,5};
+        System.out.println(arr[0]);
+        change(arr);
+        System.out.println(arr[0]);
+    }
+
+    public static void change(int[] array) {
+        array[0] = 0;
+    }
+}
+
+```
+``` java
+package makotogu;
+
+/**
+ * 方法没有改变存储在s1和s2中的对象引用，swap方法的参数x和y被初始化成为两个对象引用的拷贝，这个方法交换的是这个两个拷贝
+ */
+public class CallByValueTest3 {
+    public static void main(String[] args) {
+        Student s1 = new Student("小张");
+        Student s2 = new Student("小李");
+        swap(s1,s2);
+        System.out.println("s1"+s1.getName());
+        System.out.println("s2"+s2.getName());
+    }
+
+    public static void swap(Student x, Student y) {
+        Student temp = x;
+        x = y;
+        y = temp;
+        System.out.println("x:"+x.getName());
+        System.out.println("y:"+y.getName());
+    }
+}
+```
+**总结**
+Java程序设计语言对对象采用的不是引用调用，实际上，对象引用是按值传递的。
+Java中方法参数的使用情况：
+* 一个方法不能修改一个基本数据类型的参数(既数值型或布尔型)
+* 一个方法可以改变一个对象参数的状态
+* 一个方法不能让对象参数引用一个新的对象
+
+# 简述线程、程序、进程的基本概念
+**线程**与进程相似，但线程是个比进程更小的执行单位。一个进程在其执行的过程中可以产生多个线程。与进程不同的是同类的多个线程共享同一块内存空间和一组系统资源，所以系统在产生一个线程，或是在各个线程之间切换工作时，负担要比进程小很多，也正是如此，线程也被成为轻量级进程。
+**程序**是含有指令和数据的文件，被存储在磁盘或其他的数据存储设备中，也就是说程序是静态的代码。
+**进程**是程序的一次执行过程，是系统运行程序的基本单位，因此进程是动态的。系统运行一个程序即是一个进程从创建，运行到消亡的过程。简单来说，一个进程就是一个执行中的程序，它在计算机中一个指令接着一个指令地执行着，同时，每个进程还占有某些系统资源如CPU时间，内存空间，文件，输入输出设备地使用权等。换句话说，当程序在执行时，将会被操作系统载入内存中。
+
+# 线程有哪些基本状态？
+Java线程在运行地生命周期中地指定时刻只可能处于下面6中不同状态的一个状态
+|   状态名称   |                                                 说明                                                 |
+| :----------: | :--------------------------------------------------------------------------------------------------: |
+|     NEW      |                           初始状态，线程被构建，但是还没有调用start()方法                            |
+|   RUNNABLE   |                 运行状态，Java线程将操作系统中地就绪和运行两种状态笼统地称作“运行中”                 |
+|   BLOCKED    |                                      阻塞状态，表示线程阻塞于锁                                      |
+|   WAITING    | 等待状态，表示线程进入等待状态，进入该状态表示当前线程需要等待其他线程做出一些特定地动作(通知或中断) |
+| TIME_WAITING |                   超时等待状态，该状态不同于WAITING,它是可以在指定地时间自行返回的                   |
+|  TERMINATED  |                                  终止状态，表示当前线程已经执行完毕                                  |
