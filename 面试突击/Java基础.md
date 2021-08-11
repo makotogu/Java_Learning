@@ -448,3 +448,56 @@ Java线程在运行地生命周期中地指定时刻只可能处于下面6中不
 |   WAITING    | 等待状态，表示线程进入等待状态，进入该状态表示当前线程需要等待其他线程做出一些特定地动作(通知或中断) |
 | TIME_WAITING |                   超时等待状态，该状态不同于WAITING,它是可以在指定地时间自行返回的                   |
 |  TERMINATED  |                                  终止状态，表示当前线程已经执行完毕                                  |
+
+线程在生命周期中并不是固定处于某个状态，而是随着代码的执行在不同状态之间切换。
+
+线程创建后处于NEW（新建）状态，调用start()方法后开始优行，线程这时候处于READY(可运行)状态。可运行状态的线程获得了cpu时间片(timeslice)后就处于RUNNING(运行)状态。当线程执行wait()方法后，线程进入WAITING(等待)状态。进入等待状态的线程需要依靠其他线程的通知才能够返回到运行状态，而TIMED_WAITING(超时等待)状态相当于在等待状态上增加了超时限制，比如通过sleep(long millis)方法或wait(long millis)方法可以将Java线程置于TIMED_WAITING状态。当超时时间到达后Java线程将会返回到RUNNABLE状态。当线程调用同步方法时，在没有获取到锁的情况下，线程会进入到BLOCKED(阻塞)状态。线程在执行RUNNABLE的run()方法后会进入到TERMINATED(终止)状态。
+
+# 关于final关键字的总结
+final主要用于三个地方：变量、方法、类
+1. 一个final变量，如果是基本数据类型的变量，数值一旦初始化就不能更改，如果是引用类型的变量，则在对其初始化后便不能再让其指向另一个对象。
+2. 当用final修饰一个类时，表明这个类不能被继承。final类中的所有成员方法都会被隐式地修改为final方法
+3. 使用final方法的原因有两个，第一个原因是把方法锁定，以防任何继承类修改它的含义。第二个是因为效率。在早期的Java实现版本中，会将final方法转为内嵌调用。但是如果方法过于庞大，可能看不到内嵌调用带来的任何性能提升。（现在不用final优化了）。类中所有的private方法都隐式地指定为final
+
+# Java异常处理
+## Java中异常类层次
+在Java中，所有异常都有一个共同的祖先java.lang包中的Throwable类。Throwable类有两个重要的子类Exception(异常)和Error(错误)。Exception能被程序本身处理(try...ctach...)，Error是无法处理的。
+Exception和Error二者都是Java异常处理的重要子类，各自都包含大量子类。
+* Exception：程序自身可以处理的异常，通过catch来捕获，Exception又可以分为受检查异常(必须处理)和不受检查异常(可以不处理)
+* Error：Error属于程序无法处理的错误，我们没办法通过catch来捕获。如：VertualMachineError、OutOfMemoryError、NoClassDefFoundError等
+**受检查异常**
+在编译过程中，如果受检查异常没有被catch/throw处理，就没有办法通过编译
+除了RunntimeException及其子类外，其他的Exception类及其子类都属于检查异常，常见的有IO相关，ClassNotFoundException、SQLException..
+**不受检查异常**
+Java代码在编译过程中，我们即使不处理不受检查异常也可以正常通过编译
+RuntimeException及其子类都统称为非受检查异常，例如：NullPointException等
+## Throwable类常用方法
+* public string getMessage(): 返回异常发生时的简要描述
+* public string toString(): 返回异常发生时的详细信息
+* public string getLocalizedMessage(): 返回异常对象的本地化信息。使用Throwable的子类覆盖这个方法，可以生成本地化信息。如果子类没有覆盖该方法，则该方法返回的信息与getMessage()返回的结果相同
+* public void printStackTrace(): 在控制台上打印Throwable对象封装的异常信息
+## 异常处理总结
+* try块：用于捕获异常。其后可接0个或多个catch块，如果没有catch块，则必须更一个finally块
+* catch块：用于处理try捕获的异常
+* finally块：无论是否捕获或处理异常，finally块理得语句都会执行。当在try块或catch块中遇到return语句时，finally语句块将在方法返回之前被执行。
+**以下三种情况，finally块不会被执行**
+1. 在try或finally块中用了System.exit(int)退出程序。但是如果System.exit(int)在异常语句之后，finally还是会被执行
+2. 程序所在线程死亡
+3. 关闭cpu
+
+## Java序列化中如果有些字段不想进行序列化，怎么办？
+对于不想进行序列化的变量，使用transient关键字修饰。
+transient关键字的作用：阻止实例中那些用此关键字修饰的变量序列化；当对象被反序列化时，被transient修饰的变量值不会被持久化和恢复。transient只能修饰变量，不能修饰类和方法。
+
+## 获取用键盘输入常用的两种方法
+1. 通过Scanner
+``` java
+Scanner input = new Scanner(System.in);
+String s = input.nextLine();
+input.close();
+```
+2. 通过BufferedReader
+``` java
+BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+String s = input.readline();
+```
