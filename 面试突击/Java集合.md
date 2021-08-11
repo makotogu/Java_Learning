@@ -3,7 +3,7 @@
 * Set(注重独一无二的性质)：存储的元素是无序的、不可重复的
 * Map(用key搜索的专家)：使用键值对存储元素。key是无序的、不可重复的，value是无序的、可重复的，每个键最多映射到一个值
 
-# ArrayList和LinkedList的区别
+# ArrayList和LinkedList的区别   
 1. 是否线程安全： 两者都不安全
 2. 底层数据结构： ArrayList底层用的是Object数组；LinkedList用的是双向链表 (JDk1.6之前为双向循环链表)
 3. 插入和删除是否首元素位置影响？
@@ -31,5 +31,5 @@ Marker interface used by List implementations to indicate that they support fast
 
 # HashMap和HashTable的区别
 1. 线程是否安全：HashMap是非线程安全的，HashTable是线程安全的(但是不建议用HashTable了，要线程安全可以用ConcurrentHashMap)
-2. 效率：因为线程安全的问题，HashMao要比HashTable要快些。
+2. 效率：因为线程安全的问题，HashMao要比HashTable要快些。   
 3. 
