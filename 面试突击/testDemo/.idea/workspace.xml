@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8723a291-55a8-4e1f-a41b-64da51621533" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/test/java/BinaryCalculateTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Java集合.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Java集合.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/makotogu/CallByValueTest3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/makotogu/CallByValueTest3.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +46,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Desktop/NavigationDemo" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -56,7 +59,7 @@
       <recent name="makotogu" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.CallByValueTest3">
+  <component name="RunManager" selected="JUnit.BinaryCalculateTest.test">
     <configuration name="CallByValueTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="makotogu.CallByValueTest" />
       <module name="testDemo" />
@@ -96,21 +99,21 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HashCodeTest.test1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="BinaryCalculateTest.test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="testDemo" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="HashCodeTest" />
-      <option name="METHOD_NAME" value="test1" />
+      <option name="MAIN_CLASS_NAME" value="BinaryCalculateTest" />
+      <option name="METHOD_NAME" value="test" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HashCodeTest.test2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="BinaryCalculateTest.test1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="testDemo" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="HashCodeTest" />
-      <option name="METHOD_NAME" value="test2" />
+      <option name="MAIN_CLASS_NAME" value="BinaryCalculateTest" />
+      <option name="METHOD_NAME" value="test1" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -118,11 +121,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.BinaryCalculateTest.test" />
+        <item itemvalue="JUnit.BinaryCalculateTest.test1" />
         <item itemvalue="Application.CallByValueTest3" />
         <item itemvalue="Application.CallByValueTest2" />
         <item itemvalue="Application.CallByValueTest" />
-        <item itemvalue="JUnit.HashCodeTest.test2" />
-        <item itemvalue="JUnit.HashCodeTest.test1" />
       </list>
     </recent_temporary>
   </component>
@@ -138,6 +141,7 @@
       <workItem from="1628574992662" duration="124000" />
       <workItem from="1628583226983" duration="756000" />
       <workItem from="1628641643865" duration="8332000" />
+      <workItem from="1628775831305" duration="723000" />
     </task>
     <servers />
   </component>
@@ -158,5 +162,16 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/BinaryCalculateTest.java</url>
+          <line>12</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
