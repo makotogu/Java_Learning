@@ -145,3 +145,34 @@ Java Virtual Machine Stacks(Java虚拟机)
 
 
 ## start与run
+调用run方法程序仍然在main线程运行，FileReader.read()方法调用还是同步的
+## sleep与yield
+**sleep**
+1. 调用sleep会让当前线程从Running进入Timed Waiting状态
+2. 其它线程可以使用 interrupt方法打断正在睡眠的线程，这时sleep方法会抛出InterruptedException
+3. 睡眠结束后的线程未必会立刻得到执行
+4. 建议用TimeUnit的sleep代替Thread的sleep来获得更好的可读性
+**yield**
+1. 调用yield会让当前线程从Running进入Runnable状态，然后调度执行其他同优先级的线程。如果这时没有同优先级的线程，那么不能保证让当前线程暂停的效果
+2. 具体的实现依赖于操作系统的任务调度器
+**线程优先级**
+* 线程优先级会提示会提示(hint)调度器优先调度该线程，但它仅仅是一个提示，调度器可以忽略它
+* 如果cpu比较忙，那么优先级高的线程会获得更多的时间片，但CPU闲时，优先级几乎没作用
+
+## 案例--防止CPU占用100%
+### sleep实现
+在没有利用cpu来计算时，不要让while(true)空转浪费cpu，这时可以使用yield或sleep来让出cpu的使用权给其他的程序
+``` java
+while(true) {
+  try {
+    Thread.sleep(50);
+  } catch (InterruptedExceptino e){
+    e.printStackTrace();
+  }
+}
+```
+* 可以用wait或条件变量达到类似的效果
+* 不同的是，后两种都要加锁，并且需要相应的唤醒操作，一般适用于要进行同步的场景
+* sleep适用于无需锁同步的场景
+
+## join方法详解
