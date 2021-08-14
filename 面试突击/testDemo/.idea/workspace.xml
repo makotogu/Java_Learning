@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8723a291-55a8-4e1f-a41b-64da51621533" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/test/java/BinaryCalculateTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java集合.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Java集合.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/makotogu/CallByValueTest3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/makotogu/CallByValueTest3.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -141,7 +138,8 @@
       <workItem from="1628574992662" duration="124000" />
       <workItem from="1628583226983" duration="756000" />
       <workItem from="1628641643865" duration="8332000" />
-      <workItem from="1628775831305" duration="723000" />
+      <workItem from="1628775831305" duration="1558000" />
+      <workItem from="1628860548031" duration="277000" />
     </task>
     <servers />
   </component>

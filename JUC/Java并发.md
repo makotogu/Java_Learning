@@ -176,3 +176,174 @@ while(true) {
 * sleep适用于无需锁同步的场景
 
 ## join方法详解
+### 为什么需要join？
+下面的代码执行后，r输出什么？
+``` java
+static int r = 0;
+public static void main(String[] args) throws InterruptedException {
+    test1();
+}
+
+private static void test1() throws InterruptedException {
+    log.debug("开始");
+    Thread t1 = new Thread(() -> {
+        log.debug("开始");
+        sleep(1);
+        log.debug("结束");
+        r = 10;
+    });
+    t1.start();
+    log.debug("结果为:{}",r);
+    log.debug("结束");
+}
+```
+* 因为主线程和线程t1是并行执行的，t1线程需要1s后才能算出r=10
+* 而主线程从一开始就要打印r的结果，所以只能打印出r=0
+
+* 用join 只用加载t1.start()后即可
+``` java
+    static int r = 0;
+    public static void main(String[] args) throws InterruptedException {
+        test1();
+    }
+
+    private static void test1() throws InterruptedException {
+        log.debug("开始");
+        Thread t1 = new Thread(() -> {
+            log.debug("开始");
+            sleep(1);
+            log.debug("结束");
+            r = 10;
+        });
+        t1.start();
+        t1.join();
+        log.debug("结果为:{}",r);
+        log.debug("结束");
+    }
+```
+
+## 应用同步【案例1】
+以调用角度来讲
+* 需要等待结果返回后，才能继续运行就是同步
+* 不需要等待结果返回，就能继续运行就是异步
+``` java
+package makotogu.n3;
+
+import lombok.extern.slf4j.Slf4j;
+
+import static makotogu.n2.util.Sleeper.sleep;
+
+
+@Slf4j(topic = "c.TestJoin")
+public class TestJoin {
+    static int r = 0;
+    static int r1 = 0;
+    static int r2 = 0;
+
+    public static void main(String[] args) throws InterruptedException {
+        test3();
+    }
+
+    public static void test3() throws InterruptedException {
+        Thread t1 = new Thread(() -> {
+           sleep(2);
+           r1 = 10;
+        });
+        long start = System.currentTimeMillis();
+        t1.start();
+
+        log.debug("join begin");
+        t1.join(1500);
+        long end = System.currentTimeMillis();
+        log.debug("r1:{}, cost:{}",r1, end-start);
+    }
+
+    private static void test2() throws InterruptedException {
+        Thread t1 = new Thread(() -> {
+            sleep(1);
+            r1 = 10;
+        },"t1");
+        Thread t2 = new Thread(() -> {
+            sleep(2);
+            r2 = 20;
+        },"t2");
+        t1.start();
+        t2.start();
+        long start = System.currentTimeMillis();
+        log.debug("join begin");
+        t2.join();
+        log.debug("t2 join end");
+        t1.join();
+        log.debug("t1 join end");
+        long end = System.currentTimeMillis();
+        log.debug("r1:{}, r2:{}, cost:{}", r1, r2, end-start);
+    }
+    
+    private static void test1() throws InterruptedException {
+        log.debug("开始");
+        Thread t1 = new Thread(() -> {
+            log.debug("开始");
+            sleep(1);
+            log.debug("结束");
+            r = 10;
+        });
+        t1.start();
+        t1.join();
+        log.debug("结果为:{}",r);
+        log.debug("结束");
+    }
+
+
+}
+
+```
+
+## interrupt方法详解
+### 打断sleep，wait，join的线程
+阻塞
+打断sleep的线程，会清空打断状态，以sleep为例
+``` java
+package makotogu.test;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j(topic = "c.Test12")
+public class Test12 {
+
+    public static void main(String[] args) throws InterruptedException {
+        Thread t1 = new Thread(() -> {
+           while(true){
+               boolean interrupted = Thread.currentThread().isInterrupted();
+               if (interrupted){
+                   log.debug("被打断了，推出循环");
+                   break;
+               }
+           }
+        },"t1");
+        t1.start();
+        Thread.sleep(1000);
+        log.debug("interrupt");
+        t1.interrupt();
+    }
+}
+```
+## 两阶段中止模式
+Two Phase Termination
+在一个线程T1中如何优雅的终止线程T2？这里的优雅是指给T2一个料理后事的机会
+### 错误思路
+* 使用线程对象的stop方法停止线程
+  * stop会真正杀死线程。如果这时线程锁住了共享资源，那么当它被杀死后就再也没机会释放锁，其他线程也永远无法获取锁
+* 使用System.exit(int)方法停止线程
+  * 目的仅是停止一个线程，但这个做法会让整个程序停止
+
+``` mermaid
+graph TD
+w("while(true)") --> a
+a("有没有被打断") -- 是 --> b(料理后事) 
+b --> c((结束循环))
+a -- 否 --> d(睡眠2s)
+d -- 无异常 --> e(执行监控记录)
+d -- 有异常 --> f(设置打断标记)
+e --> w
+f --> w
+```
