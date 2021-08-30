@@ -374,7 +374,5 @@ f --> w
 ### 从Java API层面描述 Thread.State
 * NEW 线程刚刚被创建，但是还没有start()方法调用
 * RUNNABLE 当调用start()方法后，注意，Java API层面的RUNNABLE状态涵盖了操作系统层面的【可运行状态】、【运行状态】和【阻塞状态】(由于BIO导致的线程的阻塞，在Java里无法区分，仍然是可运行的)
-* WAITING
-* TIMED WAITING
-* BLOCKED
-* TERMINATED
+* WAITING、 TIMED WAITING、 BLOCKED 都是Java API层面对【阻塞状态】的细分，后面会在状态转换内细述
+* TERMINATED 当线程代码运行结束
