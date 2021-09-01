@@ -1,6 +1,7 @@
 package com.makotogu.algorithm.test;
 
 import com.makotogu.algorithm.sort.Insertion;
+import com.makotogu.algorithm.sort.Merge;
 import com.makotogu.algorithm.sort.Shell;
 
 import java.io.*;
@@ -24,6 +25,7 @@ public class SortCompare {
         list.toArray(integers);
         testInsertion(integers);
         testShell(integers);
+        testMerge(integers);
     }
 
     // 测试希尔排序
@@ -40,5 +42,13 @@ public class SortCompare {
         Insertion.sort(a);
         long end = System.currentTimeMillis();
         System.out.println("insertion time:"+ (end - start) + "ms");
+    }
+
+    // 测试归并排序
+    public static void testMerge(Integer[] a){
+        long start = System.currentTimeMillis();
+        Merge.sort(a);
+        long end = System.currentTimeMillis();
+        System.out.println("merge time:"+ (end - start) + "ms");
     }
 }
