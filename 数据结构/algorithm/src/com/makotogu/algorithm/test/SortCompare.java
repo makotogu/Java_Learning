@@ -24,7 +24,7 @@ public class SortCompare {
 
         Integer[] integers = new Integer[list.size()];
         list.toArray(integers);
-        testInsertion(integers);
+        // testInsertion(integers);
         testShell(integers);
         testMerge(integers);
         testQuick(integers);
@@ -58,6 +58,6 @@ public class SortCompare {
         long start = System.currentTimeMillis();
         Quick.sort(a);
         long end = System.currentTimeMillis();
-        System.out.println("merge time:"+ (end - start) + "ms");
+        System.out.println("quick time:"+ (end - start) + "ms");
     }
 }
