@@ -1,7 +1,6 @@
 package com.makotogu.algorithm.test;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Random;
 
 public class WriteTest {
