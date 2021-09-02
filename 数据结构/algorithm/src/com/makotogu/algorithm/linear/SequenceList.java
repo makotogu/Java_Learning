@@ -61,6 +61,9 @@ public class SequenceList<T> implements Iterable<T>{
      * @param t 被插入的元素
      */
     public void insert(T t) {
+        if (N == eles.length) {
+            resize(eles.length * 2);
+        }
         eles[N++] = t;
     }
 
@@ -70,6 +73,9 @@ public class SequenceList<T> implements Iterable<T>{
      * @param t 插入的元素
      */
     public void insert(int i, T t) {
+        if (N == eles.length) {
+            resize(eles.length * 2);
+        }
         for (int index = N; index > i; index --) {
             eles[index] = eles[index-1];
         }
@@ -88,6 +94,11 @@ public class SequenceList<T> implements Iterable<T>{
             eles[index] = eles[index + 1];
         }
         N--;
+
+        if (N < (eles.length / 4)) {
+            resize(eles.length / 2);
+        }
+
         return temp;
     }
 
@@ -125,6 +136,15 @@ public class SequenceList<T> implements Iterable<T>{
         @Override
         public Object next() {
             return eles[cusor++];
+        }
+    }
+
+    public void resize(int newSize) {
+        // 定义一个临时数组，指向原数组
+        T[] temp = eles;
+        eles = (T[]) new Object[newSize];
+        for (int i = 0; i < N; i++) {
+            eles[i] = temp[i];
         }
     }
 }
