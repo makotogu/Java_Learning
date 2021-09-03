@@ -1,10 +1,11 @@
 package com.makotogu.algorithm.linear;
 
-import org.w3c.dom.Node;
+import java.util.Iterator;
 
-public class LinkList<T> {
+public class LinkList<T> implements Iterable<T>{
     private Node head;
     private int N;
+
     private class Node {
         T item;
         Node next;
@@ -14,6 +15,7 @@ public class LinkList<T> {
             this.next = next;
         }
     }
+
     public LinkList() {
         // 初始化头节点
         this.head = new Node(null, null);
@@ -56,9 +58,47 @@ public class LinkList<T> {
         N++;
     }
     public T remove(int i) {
-        return null;
+        Node pre = head;
+        for (int index = 0 ; index < i; index++) {
+            pre = pre.next;
+        }
+        Node cur = pre.next;
+        pre.next = cur.next;
+        N--;
+        return cur.item;
     }
     public int indexOf(T t){
+        Node node = head;
+        int index = 0;
+        while (node.next != null) {
+            if (node.item.equals(t)) {
+                return index;
+            }
+            index++;
+        }
         return -1;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new LIterator();
+    }
+
+    private class LIterator implements Iterator{
+        private Node n;
+        public LIterator() {
+            this.n = head;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return n.next != null;
+        }
+
+        @Override
+        public Object next() {
+            n = n.next;
+            return n.item;
+        }
     }
 }
