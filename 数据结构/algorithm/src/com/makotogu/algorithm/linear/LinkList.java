@@ -101,4 +101,24 @@ public class LinkList<T> implements Iterable<T>{
             return n.item;
         }
     }
+
+    /**
+     * 用来反转整个链表
+     */
+    public void reverse() {
+        if (isEmpty()) {
+            return;
+        }
+        reverse(head.next);
+    }
+    public Node reverse(Node node) {
+        if (node.next == null) {
+            head.next = node;
+            return  node;
+        }
+        Node pre = reverse(node.next);
+        pre.next = node;
+        node.next = null;
+        return node;
+    }
 }
