@@ -1,5 +1,7 @@
 package com.makotogu.algorithm.linear;
 
+import org.w3c.dom.Node;
+
 public class LinkList<T> {
     private Node head;
     private int N;
@@ -44,9 +46,14 @@ public class LinkList<T> {
         n.next = newNode;
         N++;
     }
-
     public void insert(int i, T t) {
-
+        Node pre = head;
+        for (int index = 0; index < i; index++ ) {
+            pre = pre.next;
+        }
+        Node newNode = new Node(t, pre.next);
+        pre.next = newNode;
+        N++;
     }
     public T remove(int i) {
         return null;

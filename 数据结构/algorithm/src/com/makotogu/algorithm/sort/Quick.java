@@ -1,6 +1,7 @@
 package com.makotogu.algorithm.sort;
 
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 public class Quick {
     private static boolean less(Comparable v, Comparable w) {
@@ -35,17 +36,22 @@ public class Quick {
         int left = lo-1;
         int right = hi+1;
         while (true) {
-            while (less(a[key],a[--right]) && right > lo) {
+            while (left < key && less(a[key],a[++left])) {
+                exch(a, key, left);
+                key = left;
+                break;
             }
-            while (less(a[++left],a[key]) && left < hi) {
+            while (right > key && less(a[--right],a[key])) {
+                exch(a, key, right);
+                key = right;
+                break;
             }
             if (left >= right) {
                 break;
-            } else {
-                exch(a, left, right);
             }
         }
         return key;
     }
+
 
 }
