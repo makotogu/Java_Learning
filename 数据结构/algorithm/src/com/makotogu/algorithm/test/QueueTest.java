@@ -11,7 +11,7 @@ public class QueueTest {
         queue.enqueue(3);
         Integer dequeue = queue.dequeue();
         System.out.println(dequeue);
-
+        System.out.println(queue.size());
         System.out.println("----");
         for (Integer num : queue) {
             System.out.println(num);
