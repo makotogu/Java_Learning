@@ -1,6 +1,6 @@
 package com.makotogu.algorithm.test;
 
-import com.makotogu.algorithm.linear.SymbolTable;
+import com.makotogu.algorithm.symbol.SymbolTable;
 
 public class SymbolTableTest {
     public static void main(String[] args) {

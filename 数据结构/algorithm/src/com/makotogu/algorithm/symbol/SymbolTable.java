@@ -1,4 +1,4 @@
-package com.makotogu.algorithm.linear;
+package com.makotogu.algorithm.symbol;
 
 public class SymbolTable<K, V> {
     private Node head;

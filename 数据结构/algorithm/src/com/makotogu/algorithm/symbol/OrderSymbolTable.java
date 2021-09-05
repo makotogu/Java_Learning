@@ -1,33 +1,3 @@
-# 一、 符号表
-
-符号表最主要的目的是讲一个键和一个值联系起来，符号表能存储的数据元素是一个键和一个值共同组成的简直对数据，我们可以通过键来查找对应的值。
-
-符号表中键具有唯一性。
-
-## 1.1符号表API设计
-
-**结点类：**
-
-| 类名     | Node\<key, value>                                            |
-| -------- | ------------------------------------------------------------ |
-| 构造方法 | Node(Key key, Value value, Node next): 创建Node对象          |
-| 成员变量 | 1. public Key key: 存储键<br />2. public Value value: 存储值<br />3. public Node next：存储下一个节点 |
-
-**符号表：**
-
-| 类名     | SymbolTable<Key, Value>                                      |
-| -------- | ------------------------------------------------------------ |
-| 构造方法 | SymbolTable(): 创建SymbolTable对象                           |
-| 成员方法 | 1. public Value get(Key key): 根据键值key，找到对应的值<br />2. public void put(Key key, Value value): 向符号表中插入一个键值对<br />3. public void delete(Key key): 删除键为key的键值对<br />4. public int size(): 获取符号表的大小 |
-| 成员变量 | 1. private Node head: 记录·首结点<br />2. private int N: 记录符号表中的键值对的个数 |
-
-
-
-## 1.2 有序符号表
-
-实现Comparable
-
-``` java
 package com.makotogu.algorithm.symbol;
 
 public class OrderSymbolTable<K extends Comparable<K>, V> {
@@ -95,6 +65,3 @@ public class OrderSymbolTable<K extends Comparable<K>, V> {
         return null;
     }
 }
-
-```
-
