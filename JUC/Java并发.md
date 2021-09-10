@@ -505,7 +505,7 @@ static void decrement() {
 
 多个线程在临界区内执行，由于代码的执行序列不同而导致结果无法预测，称之为发生了**竞态条件**
 
-## 4.2 synchronized 解决方案
+## synchronized 解决方案
 
 ### <font color="green"> * 应用之互斥</font>
 
@@ -602,3 +602,340 @@ participant lock as 锁对象
   * 会各管各，没有效果 -- 锁对象
 * 如果t1 synchronized(obj) 而 t2没加会怎么样？
   * 会没有获取锁的动作 -- 锁对象
+
+### 面向对象改造
+
+``` java
+package makotogu.test;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j(topic = "c.Test17")
+public class Test17 {
+    static int counter = 0;
+    public static void main(String[] args) throws InterruptedException {
+        Room room = new Room();
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 5000; i++) {
+                room.increment();
+            }
+        }, "t1");
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 5000; i++) {
+                room.decrement();
+            }
+        }, "t2");
+
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+        log.debug("{}",room.getCounter());
+
+    }
+}
+
+class Room {
+    private int counter = 0;
+    public void increment() {
+        synchronized (this) {
+            counter++;
+        }
+    }
+    public void decrement() {
+        synchronized (this) {
+            counter--;
+        }
+    }
+
+    public int getCounter() {
+        synchronized (this) {
+            return counter;
+        }
+    }
+}
+
+```
+
+## 方法上的synchronized
+
+``` java
+class Test {
+  public synchronized void test() {
+    
+  }
+}
+
+// 等价于
+ class Test {
+   public void test() {
+     synchronized (this) {
+       
+     }
+   }
+ }
+```
+
+```java
+class Test {
+  public synchronized static void test() {
+    
+  }
+}
+
+// 等价于
+ class Test {
+   public void test() {
+     synchronized (Test.class) {
+       
+     }
+   }
+ }
+```
+
+### 所谓的“线程八锁”
+
+考察锁住哪个对象
+
+``` java
+package makotogu.n4;
+
+import lombok.extern.slf4j.Slf4j;
+
+import static makotogu.n2.util.Sleeper.sleep;
+
+@Slf4j(topic = "c.Test8Lock")
+public class Test8Locks {
+    public static void main(String[] args) {
+        Number n1 = new Number();
+        Number n2 = new Number();
+        new Thread(() -> {
+            log.debug("begin");
+            n1.a();
+        }).start();
+        new Thread(() -> {
+            log.debug("begin");
+            n2.b();
+        }).start();
+//        new Thread(() -> {
+//            log.debug("begin");
+//            n1.c();
+//        }).start();
+    }
+}
+
+/**
+ * 第一种的Number类 锁方法，同一个对象this
+ */
+/*@Slf4j(topic = "c.Number")
+class Number {
+    public synchronized void a() {
+        log.debug("1");
+    }
+    public synchronized void b() {
+        log.debug("2");
+    }
+}*/
+
+/**
+ * 和第一种相比多了一个sleep方法
+ * sleep不解除锁
+ */
+/*
+@Slf4j(topic = "c.Number2")
+class Number {
+    public synchronized void a() {
+        sleep(1);
+        log.debug("1");
+    }
+    public synchronized void b() {
+        log.debug("2");
+    }
+}
+*/
+
+/**
+ * 增加一个 c方法 不加锁
+ * 没有互斥效果，并行执行
+ * 1不可能最先 有1s的sleep
+ */
+/*
+@Slf4j(topic = "c.Number3")
+class Number {
+    public synchronized void a() {
+        sleep(1);
+        log.debug("1");
+    }
+    public synchronized void b() {
+        log.debug("2");
+    }
+    public void c() {
+        log.debug("3");
+    }
+}*/
+
+/**
+ * main方法改动有两个对象 n1调用a n2调用b
+ * 不是同一个对象，所以不会互斥，2总是先于1打印
+ */
+/*@Slf4j(topic = "c.Number4")
+class Number {
+    public synchronized void a() {
+        sleep(1);
+        log.debug("1");
+    }
+    public synchronized void b() {
+        log.debug("2");
+    }
+}*/
+
+/**
+ * 一个静态锁，一个普通方法的锁，对象不同
+ * 打印情况和4一样
+ */
+/*
+@Slf4j(topic = "c.Number5")
+class Number {
+    public synchronized static void a() {
+        sleep(1);
+        log.debug("1");
+    }
+    public synchronized void b() {
+        log.debug("2");
+    }
+}*/
+
+/**
+ * 两个都是static情况
+ * 和情况2一样打印
+ */
+/*
+@Slf4j(topic = "c.Number6")
+class Number {
+    public synchronized static void a() {
+        sleep(1);
+        log.debug("1");
+    }
+    public synchronized static void b() {
+        log.debug("2");
+    }
+}*/
+
+/**
+ * 使用n1和n2调用方法
+ */
+/*@Slf4j(topic = "c.Number7")
+class Number {
+    public synchronized void a() {
+        sleep(1);
+        log.debug("1");
+    }
+    public synchronized static void b() {
+        log.debug("2");
+    }
+}*/
+
+/**
+ * n1 n2调用静态 走Number.class
+ */
+@Slf4j(topic = "c.Number8")
+class Number {
+    public synchronized static void a() {
+        sleep(1);
+        log.debug("1");
+    }
+    public synchronized static void b() {
+        log.debug("2");
+    }
+}
+```
+
+## 变量的线程安全分析
+
+### 成员变量和静态变量是否线程安全？
+
+* 如果它们没有共享，则线程安全
+* 如果它们被共享了，根据它们的状态是否能够改变，又分两种情况
+  * 如果只有读操作，则线程安全
+  * 如果有读写操作，则这段代码都是临界区需要考虑线程安全
+
+### 局部变量是否线程安全
+
+* 局部变量是线程安全的
+* 但局部变量引用的对象则未必
+  * 如果该对象没有逃离方法的作用范围，它是线程安全的
+  * 如果该对象逃离方法的作用范围，需要考虑线程安全
+
+### 局部变量的线程安全分析
+
+``` java
+public static void test1() {
+  int i = 10;
+  i++;
+}
+```
+
+```java
+public static void test1() {
+  descriptor: ()V
+  flags: ACC_PUBLIC, ACC_STATIC
+  Code:
+  	stack=1, locals=1, arg_size=0
+      0: bipush				10
+      2: istore_0
+      3: iinc	        0, 1
+      6: return
+    LineNumberTable:
+  		line 10 : 0
+      line 11 : 3
+      line 12 : 6
+    LocalVariableTable:
+  		Start  Length  Slot  Name  Signature
+        3      4      0      i      I
+}
+```
+
+
+
+### 常见线程安全类
+
+* String
+* Integer
+* StringBuffer
+* Random
+* Vector
+* Hashtable
+* java.util.concurrent包下的类
+
+这里说的线程安全是指，多个线程调用它们同一个实例的某个方法时，是线程安全的，也可以理解为
+
+* 它们的每个方法是原子的
+* 但注意它们多个方法的组合不是原子的
+
+### 线程安全类方法的组合
+
+分析下面代码是否线程安全？
+
+```java
+Hashtable table = new Hashtable();
+// 线程1， 线程2
+if (table.get("key") == null) {
+  table.put("key",value);
+}
+```
+
+```mermaid
+sequenceDiagram
+participant t1 as 线程1
+participant t2 as 线程2
+participant table
+
+t1 ->> table : get("key") == null
+t2 ->> table : get("key") == null
+t2 ->> table : put("key", v2)
+t1 ->> table : put("key", v1)
+
+```
+
+
+
