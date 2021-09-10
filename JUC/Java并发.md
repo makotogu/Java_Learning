@@ -1,4 +1,5 @@
 # 进程与线程
+
 ## 进程
 * 程序由指令和数据组成，但这些指令要运行，数据要读写，就必须将指令加载至CPU，数据加载内存。在指令运行过程中还需要用到磁盘、网络等设备
 * 当一个程序被运行，从磁盘加载这个程序的代码至内存，这时就开启了一个进程
@@ -381,3 +382,223 @@ f --> w
 * 泡茶工序
    1. 甲：洗水壶，烧水；在等烧水的时间洗茶壶茶杯；等水开了泡茶喝
    2. 乙：洗水壶，洗茶壶，拿茶叶；再去烧水；再去泡茶
+
+
+
+# 共享模型之管程
+
+## 共享带来的问题
+
+``` java
+package makotogu.test;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j(topic = "c.Test17")
+public class Test17 {
+    static int counter = 0;
+    public static void main(String[] args) throws InterruptedException {
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 5000; i++) {
+                counter++;
+            }
+        }, "t1");
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 5000; i++) {
+                counter--;
+            }
+        }, "t2");
+
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+        log.debug("{}",counter);
+
+    }
+}
+
+```
+
+输出结果不是0
+
+### 问题分析
+
+从字节码去理解
+
+**i++**
+
+``` tex
+getstatic i // 获取静态变量i的值
+iconst_1 // 准备常量1
+iadd // 自增
+putstatic // 将修改过后的值存入静态变量i
+```
+
+``` mermaid
+graph TD
+A[主内存 <br/> &nbsp &nbsp &nbsp static int i = 0&nbsp &nbsp &nbsp ] --> B[线程1 i++]
+B --> A
+A --> C[线程2 i--] --> A
+
+```
+
+``` mermaid
+sequenceDiagram
+participant t1 as 线程1
+participant t2 as 线程2
+participant i as static 1
+	i ->> t2 : getstatic i 读取 0
+	t2 ->> t2 : iconst_1 准备常数 1
+	t2 ->> t2 : isub 减法， 线程内 i = -1
+	t2 -->> t1 : 上下文切换
+	
+	i ->> t1 : getstatic i 读取 0
+	t1 ->> t1 : iconst_1 准备常数 1
+	t1 ->> t1 : iadd 加法， 线程内 i = 1
+	t1 ->> i : putstatic i 写入 1
+	
+	t1 -->> t2 : 上下文切换
+	t2 ->> i : putstatic i 写入 -1
+```
+
+``` mermaid
+sequenceDiagram
+participant t1 as 线程1
+participant t2 as 线程2
+participant i as static 1
+	i ->> t1 : getstatic i 读取 0
+	t1 ->> t1 : iconst_1 准备常数 1
+	t1 ->> t1 : iadd 加法， 线程内 i = 1
+	t1 -->> t2 : 上下文切换
+	
+	i ->> t2 : getstatic i 读取 0
+	t2 ->> t2 : iconst_1 准备常数 1
+	t2 ->> t2 : isub 减法， 线程内 i = -1
+	t2 ->> i : putstatic i 写入 -1
+	
+	t2 -->> t1 : 上下文切换
+	t1 ->> i : putstatic i 写入 1
+```
+
+### 临界区 Critical Section
+
+* 一个程序运行多个线程本身没有问题
+* 问题出现在多个线程访问**共享资源**
+  * 多个线程读**共享资源**也没问题
+  * 再多个线程对**共享资源**读写操作时发生指令交错，就会出现问题
+* 一段代码块内如果存在对**共享资源**的多线程读写操作，称这段代码为临界区
+
+``` java
+static int counter = 0;
+static void increment() {
+    // 临界区
+    counter++;
+}
+static void decrement() {
+    // 临界区
+    counter--;
+}
+```
+
+### 竞态条件 Race Condition
+
+多个线程在临界区内执行，由于代码的执行序列不同而导致结果无法预测，称之为发生了**竞态条件**
+
+## 4.2 synchronized 解决方案
+
+### <font color="green"> * 应用之互斥</font>
+
+为了避免临界区的竞态条件发生，有多重手段可以达到目的
+
+* 阻塞式的解决方案: synchronized， Lock
+* 非阻塞式的解决方案: 原子变量
+
+
+
+### synchronized
+
+语法
+
+``` java
+synchronized (对象) {
+    临界区
+}
+```
+
+解决问题
+
+``` java
+package makotogu.test;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j(topic = "c.Test17")
+public class Test17 {
+    static int counter = 0;
+    static Object lock= new Object();
+    public static void main(String[] args) throws InterruptedException {
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 5000; i++) {
+                synchronized (lock) {
+                    counter++;
+                }
+            }
+        }, "t1");
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 5000; i++) {
+                synchronized (lock) {
+                    counter--;
+                }
+            }
+        }, "t2");
+
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+        log.debug("{}",counter);
+
+    }
+}
+
+```
+
+
+
+用图来表示
+
+``` mermaid
+sequenceDiagram
+participant t1 as 线程1
+participant t2 as 线程2
+participant i as static 1
+participant lock as 锁对象
+	t2 ->> lock : 尝试获取锁
+	Note over lock, t2 : 拥有锁
+	i ->> t2 : getstatic i 读取 0
+	t2 ->> t2 : iconst_1 准备常数 1
+	t2 ->> t2 : isub 减法， 线程内 i = -1
+	t2 -->> t1 : 上下文切换
+	
+	t1 -x lock : 尝试获取锁，被阻塞(BLOCKED)
+	t1 -->> t2 : 上下文切换
+	t2 ->> i : putstatic i 写入 -1
+	Note over t2, lock : 拥有锁
+	t2 ->> lock : 释放锁，并唤醒阻塞的线程
+	
+	Note over t1, lock : 拥有锁
+	i ->> t1 : getstatic i 读取 -1
+	t1 ->> t1 : iconst_1 准备常数 1
+	t1 ->> t1 : iadd 加法， 线程内 i = 0
+	t2 ->> i : putstatic i 写入 0
+	Note over t1, lock : 拥有锁
+	t1 ->> lock : 释放锁，并唤醒阻塞的线程
+```
+
+* 如果将synchronized放在for循环外面会怎么样？
+  * 粒度过大，整个for运行完才会到下一个 -- 原子性
+* 如果 t1 synchronized(obj1 ) 而 t2 synchronized(obj2)会怎么样运作？
+  * 会各管各，没有效果 -- 锁对象
+* 如果t1 synchronized(obj) 而 t2没加会怎么样？
+  * 会没有获取锁的动作 -- 锁对象

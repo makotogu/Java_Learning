@@ -20,7 +20,7 @@ public class Test16 {
             Sleeper.sleep(2);
             log.debug("拿茶叶");
             Sleeper.sleep(1);
-            try {
+            try {   
                 t1.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
