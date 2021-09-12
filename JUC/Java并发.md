@@ -1214,3 +1214,84 @@ class TicketWindow {
 }
 ```
 
+## Monitor概念
+
+### java对象头
+
+以32位为例
+
+普通对象
+
+``` ruby
+|-------------------------------------------------------|
+|             Object Header  (64bits)                   |
+|-------------------------------|-----------------------|
+|        Mark Word (32bits)     |  Klass Word (32bits)  |
+|-------------------------------------------------------|
+```
+
+数组对象
+
+``` ruby
+|-------------------------------------------------------------------------------|
+|                                     Object Header  (96bits)                   |
+|-------------------------------|-----------------------|-----------------------|
+|        Mark Word (32bits)     |  Klass Word (32bits)  |  array length(32bits) |
+|-------------------------------------------------------------------------------|
+```
+
+
+
+### Monitor
+
+monitor 被翻译为监视器或管程
+
+每个Java对象都可以关联一个Monitor对象，如果使用synchronized给对象上锁（重量级）之后，该对象头的MarkWord中就被设置了指向Monitor对象的指针
+
+### * 原理之synchronized
+
+``` JAVA
+static final Object lock = new Object();
+static int counter = 0;
+
+public static void main(String[] args) {
+    synchronizes(lock) {
+        counter++;
+    }
+}
+```
+
+### 1. 轻量级锁
+
+轻量级锁的使用场景：如果一个对象虽然有多线程访问，但多线程访问的时间是错开的，那么可以使用轻量级锁来优化
+
+轻量级锁对使用者是透明的，即语法仍然是synchronized
+
+``` JAVA	
+static final Object obj = new Object();
+public static void method1() {
+    synchronized(obj) {
+        // 同步块A
+        method2();
+    }
+}
+public static void method2() {
+    synchronized(obj) {
+        // 同步块B
+    }
+}
+```
+
+### 2. 锁膨胀
+
+如果在尝试加轻量级锁的过程中，CAS操作无法成功，这时一种情况就是有其他的线程为此对象加上了轻量级锁（有竞争），这时需要进行锁膨胀，将轻量级锁变为重量级锁
+
+``` java
+static Object obj = new Object();
+public static void method1() {
+    synchronized(obj) {
+        // 同步块
+    }
+}
+```
+
