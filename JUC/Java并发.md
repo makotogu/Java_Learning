@@ -937,5 +937,280 @@ t1 ->> table : put("key", v1)
 
 ```
 
+#### 不可变类线程安全性
 
+String、Integer都是不可变类，内部状态不可以改变，所以是线程安全的
+
+String的replace、substring等方法是怎么保证线程安全的
+
+```java
+public class Immutable {
+  private int value = 0;
+  
+  public Immutable(int value) {
+    this.value = value;
+  }
+  
+  public int getValue() {
+    return this.value;
+  }
+}
+```
+
+
+
+#### 实例分析
+
+``` java
+public class MyServlet extends HttpServlet {
+  // 是否安全？ 不是 HashMap不是线程安全的，用ConcurrentHashMap
+  Map<String, Object> map = new HashMap<>();
+  
+  // 是否安全？ 是的 String属于不可变量
+  String S1 = "...";
+  // 是否安全？ 是的 final修饰的
+  final String S2 = "---";
+  
+  // 是否安全？ 实例变量 可以被修改 不安全
+  Date D1 - new Date();
+  // 是否安全？引用值对象（对象地址）不能变，但是日期内的属性可以改
+  final Date D2 = new Date();
+  
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    // 使用上述变量
+  }
+  
+}
+```
+
+``` java
+public class MyServlet extends HttpServlet {
+  // 是否安全？ userService 不是线程安全的，多个线程可以共享使用这个对象，
+  private UserService userService = new UserServiceImpl();
+  
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    userService.update(...);
+  }
+}
+
+public class UserServiceImpl implements USerService {
+  // 记录调用次数
+  private int count = 0;
+  
+  public void update() {
+    // ... 
+    // 临界区
+    count++;
+  }
+}
+```
+
+```java
+@Aspect
+@Component
+public class MyAspect {
+  // 是否安全？不安全，默认单例，要被共享（scope）
+  private long start = 0L;
+  
+  @Before("execution(* *(..))")
+  public void before() {
+    start = System.nanoTime();
+	}
+  
+  @After("execution(* *(...))")
+  public void after() {
+    long end = System.nanoTime();
+    SYstem.out.println("cost time:" + (end - start))
+  }
+}
+```
+
+```java
+public class MyServlet ext4end HttpServlet {
+  // 是否安全 Service内有成员变量的，但是是私有的，也没有可以修改的方法，所以是不可变的成员变量，是安全的
+  private UserService userService = new UserServiceImpl();
+  
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    userService.update(...);
+  }
+}
+
+public class USerServceImpl implements UserService {
+  // 是否安全 UserDao是安全的，虽然被共享，但是没有可以被修改的成员变量
+  private UserDao userDao = new UserDaoImpl();
+  
+  public void update() {
+    userDao.update();
+  }
+}
+
+public class UserDaoImpl implements UserDao {
+  // 没有成员变量，哪怕多个线程也没法去修改 安全的
+  public void update() {
+    String sql = "update user set password = ? where username = ?";
+    // 是否安全 每个线程创建的connection不共享 是线程安全的
+    try (Connection conn = DriverManager.getConnection("","","")) {
+      // ...
+    } catch (Exception e) {
+      // ...
+    }
+  }
+}
+```
+
+```java
+public class MyServlet ext4end HttpServlet {
+  // 是否安全 
+  private UserService userService = new UserServiceImpl();
+  
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    userService.update(...);
+  }
+}
+
+public class USerServceImpl implements UserService {
+  // 是否安全
+  private UserDao userDao = new UserDaoImpl();
+  
+  public void update() {
+    userDao.update();
+  }
+}
+
+public class UserDaoImpl implements UserDao {
+  // 是否安全 Connection 会被多个线程共享，成员变量，要做成局部变量才行
+  private Connection conn - null;
+  public void update() throws SQLException {
+    String sql = "update user set password = ? where username = ?";
+    conn = DriverManager.getConnection("","","");
+    //...
+    conn.close();
+  }
+}
+```
+
+```java
+public class MyServlet ext4end HttpServlet {
+  // 是否安全 
+  private UserService userService = new UserServiceImpl();
+  
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    userService.update(...);
+  }
+}
+
+public class USerServceImpl implements UserService {
+  // 是否安全 安全，每个线程会创建一个dao 但是这种写法不推荐
+  public void update() {
+    UserDao userDao = new UserDaoImpl();
+    userDao.update();
+  }
+}
+
+public class UserDaoImpl implements UserDao {
+  // 是否安全 Connection 会被多个线程共享，成员变量，要做成局部变量才行
+  private Connection conn - null;
+  public void update() throws SQLException {
+    String sql = "update user set password = ? where username = ?";
+    conn = DriverManager.getConnection("","","");
+    //...
+    conn.close();
+  }
+}
+```
+
+```java
+public abstract class Test {
+  public void bar() {
+    // 是否安全 
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    foo(sdf);
+  }
+  
+  public abstract foo(SimpleDateFormat sdf);
+
+  public static void main(String[] args) {
+    new Test().bar();
+  }
+}
+```
+
+其中foo的行为是不确定的，可能导致不安全的发生，被称为**外星方法**
+
+``` java
+public void foo(SimpleDateFormat sdf) {
+  String dateStr = "1999-19-11 00:00:00";
+  for	(int i = 0l i < 20; i++) {
+    new Thread (() -> {
+      try {
+        sdf.parse(dateStr);
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+    }).start();
+  }
+}
+```
+
+## 习题
+
+### 卖票练习
+
+测试下面代码有无线程安全问题并尝试改正
+
+```java
+public class ExerciseSell {
+  public static void main(String[] args) {
+    TicketWindow ticketWindow = new TicketWindow(2000);
+    List<Thread> list = new ArrayList<>();
+    // 用来存储卖出去多少张票
+    List<Integer> sellCount = new Vector<>();
+    for (int i = 0; i < 2000; i++) {
+      Thread t = new Thread(() -> {
+       	// 分析这里的竟态条件
+        int count = ticketWindow.sell(randomAmount());
+        sellCoumt.add(count);
+      });
+      list.add(t);
+      t.start();
+    }
+    list.forEach((t) -> {
+      try {
+        t.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    });
+    // 卖出去的票求和
+    log.debug("selled count:{}",sellCount.stream().mapToInt(c -> c).sum());
+    // 剩余票数
+    log.debug("remainder count:{}", ticketWindow.getCount());
+  }
+  // Random 为线程安全
+  static Random random = new Random();
+  public static int randomAmount() {
+    return random.nextInt(5) + 1;
+  }
+}
+
+// 售票窗口
+class TicketWindow {
+  private int count;
+  
+  public TicketWindow(int count) {
+    this.count = count;
+  }
+  public int getCOunt() {
+    return count;
+  }
+  public int sell(int amount) {
+    if (this.count >= amount) {
+      this.count -= amount;
+      return amount;
+    } else {
+      return 0;
+    }
+  }
+}
+```
 
