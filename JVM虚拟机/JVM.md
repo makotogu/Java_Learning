@@ -251,4 +251,100 @@ Direct Memory
 三步依次循环
 
 ## Young Collection
-* 会STW
+
+会触发STW
+
+## Young Collection + CM
+
+* 在Young GC时会进行GC ROOT的初始标记
+
+* 老年代占用堆空间比例达到阈值时，进行并发标记(不会STW), 由下面的JVM参数决定
+
+    -XX：InitiatingHeapOccupancyPercent=percent （默认45%） 
+
+## Mixed Collection
+
+会对E、S、O进行全面垃圾回收
+
+*   最终标记(Remark)会STW
+*   拷贝存活(Evacuation)会STW
+*   -XX:MaxGCPauseMillis=ms
+
+## Full GC
+
+*   Serial GC
+    *   新生代内存不足发生的垃圾收集-minor gc
+    *   老年代内存不足发生的垃圾收集-full gc
+*   Parallel GC
+    *   新生代内存不足发生的垃圾收集-minor gc
+    *   老年代内存不足发生的垃圾收集-full gc
+*   CMS
+    *   新生代内存不足发生的垃圾收集-minor gc
+    *   老年代内存不足 
+
+*   G1
+    *   新生代内存不足发生的垃圾收集-minor gc
+    *   老年代内存不足
+
+## Young Collection 跨代引用
+
+*   新生代回收的跨代引用（老年代引用新生代）问题
+    *   老年代的区域细分（卡表）  每个区域（Card）512B左右
+    *   如果某个区域中引用了新生代，就标记为脏Card
+
+*   卡表与Remembered Set
+*   在引用变更时通过post-write barrier + dirty card queue
+*   concurrent refinement threads 更新 Remembered Set
+
+## Remark
+
+*   pre-write barrier + satb_mark_queue
+
+## JDK8 字符串去重复
+
+*   优点： 节省大量内存
+*   缺点： 略微多占用了cpu时间，新生代回收时间略微增加
+*   -XX:+UserStringDeduplication
+
+``` java
+String s1 = new String("hello"); // char[] {'h','e','l','l','o'}
+String s2 = new String("hello"); // char[] {'h','e','l','l','o'}
+```
+
+*   将所有新分配的字符串放入一个队列
+*   当新生代回收时，G1并发检查是否有字符串重复
+*   如果它们值一样，让它们引用同一个char[]
+*   注意，与String.intern() 不一样
+    *   String.intern() 关注的是字符串对象
+    *   字符串去重关注的是char[]
+    *   在JVM内部，使用了不同的字符串表
+
+## JDK 8u40 并发标记类卸载
+
+所有对象都经过并发标记后，就能知道哪些类不再被使用，当一个类加载器的所有类都不再使用，则卸载它所加载的所有类
+
+-XX:+ClassUnloadingWithConcurrentMark 默认启用
+
+## JDK 8u60 回收巨型对象
+
+*   一个对象大于region的一半时，称之为巨型对象
+*   G1不会对巨型对象进行拷贝
+*   回收时会被优先考虑
+*   G1 会跟踪老年代所有incoming引用，这样老年代incoming引用为0的巨型对象就可以在新生代垃圾回收时处理掉
+
+## JDK 9 并发标记起始时间的调整
+
+*   并发标记必须在堆空间占满前完成，否则退化为FullGC
+*   JDK9之前需要使用-XX:InitialingHeapOccupancyPercent
+*   JDK9可以动态调整
+    *   -XX:InitiatingHeapOccupancyPercent 用来设置初始值
+    *   进行数据采样并动态调整
+    *   总会添加一个安全的空档空间
+
+# 垃圾回收调优
+
+预备知识
+
+*   掌握GC相关的VM参数，会基本的空间调整
+*   掌握相关工具
+*   调优跟应用、环境有关、没有放之四海而皆准的法则
