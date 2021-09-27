@@ -1,4 +1,4 @@
-package com.makotogu.c1;
+package com.makotogu.c1c2c3;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,11 +1,11 @@
-package com.makotogu.c1;
+package com.makotogu.c1c2c3;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import static com.makotogu.c1.ByteBufferUtil.debugAll;
+import static com.makotogu.c1c2c3.ByteBufferUtil.debugAll;
 
 public class TestScatteringReads {
     public static void main(String[] args) {

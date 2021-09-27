@@ -1,10 +1,9 @@
-package com.makotogu.c1;
+package com.makotogu.c1c2c3;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import static com.makotogu.c1.ByteBufferUtil.debugAll;
+import static com.makotogu.c1c2c3.ByteBufferUtil.debugAll;
 
 public class TestByteBufferString {
     public static void main(String[] args) {

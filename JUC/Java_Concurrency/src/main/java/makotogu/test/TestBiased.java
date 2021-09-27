@@ -9,10 +9,32 @@ public class TestBiased {
         Dog d = new Dog();
         log.debug(ClassLayout.parseInstance(d).toPrintable());
 
-        synchronized(d) {
+        new Thread(() ->{
             log.debug(ClassLayout.parseInstance(d).toPrintable());
-        }
-        log.debug(ClassLayout.parseInstance(d).toPrintable());
+            synchronized(d) {
+                log.debug(ClassLayout.parseInstance(d).toPrintable());
+            }
+            log.debug(ClassLayout.parseInstance(d).toPrintable());
+            synchronized (TestBiased.class) {
+                TestBiased.class.notify();
+            }
+        }, "t1").start();
+
+        new Thread(() ->{
+            synchronized (TestBiased.class) {
+                try {
+                    TestBiased.class.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            log.debug(ClassLayout.parseInstance(d).toPrintable());
+            synchronized(d) {
+                log.debug(ClassLayout.parseInstance(d).toPrintable());
+            }
+            log.debug(ClassLayout.parseInstance(d).toPrintable());
+        }, "t2").start();
+
     }
 }
 

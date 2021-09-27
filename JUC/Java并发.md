@@ -1312,3 +1312,16 @@ public static void method1() {
 *   如果开启了偏向锁(默认开启)，那么对象创建后，Markword值为0x05即为最后3位为101，这时它的thread、epoch、age都为0
 *   偏向锁是默认是延迟的，不会再程序启动时立即生效，如果想避免延迟，可以加VM参数-XX：BiasedLockingStartupDelay=0来禁用延迟
 *   如果没有开启偏向锁，那么对象创建后，markword值为0x01即最后三位为001，这时它的hashcode、age都为0，第一次用到hashcode时才会赋值
+
+#### 撤销-调用对象hashCode
+
+调用了对象的hashCode，但偏向锁的对象MarkWord中存储的是线程id，如果调用hashCode会导致偏向锁被撤销
+
+* 轻量级锁会在锁记录中记录hashCode
+* 重量级锁会在Monitor中记录hashCode
+
+在调用hashCode后使用偏向锁，记得去掉-XX:-UseBiasedLocking
+
+#### 撤消-其他线程使用对象
+
+当有其他线程调用偏向锁对象时，会将偏向锁升级为轻量级锁
