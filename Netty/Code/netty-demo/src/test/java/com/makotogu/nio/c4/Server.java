@@ -1,4 +1,4 @@
-package com.makotogu.c4;
+package com.makotogu.nio.c4;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +10,7 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.makotogu.c1c2c3.ByteBufferUtil.debugRead;
+import static com.makotogu.nio.c1c2c3.ByteBufferUtil.debugRead;
 
 @Slf4j(topic = "c.Sever")
 public class Server {

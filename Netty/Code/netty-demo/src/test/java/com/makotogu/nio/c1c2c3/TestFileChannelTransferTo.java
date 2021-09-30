@@ -1,4 +1,4 @@
-package com.makotogu.c1c2c3;
+package com.makotogu.nio.c1c2c3;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

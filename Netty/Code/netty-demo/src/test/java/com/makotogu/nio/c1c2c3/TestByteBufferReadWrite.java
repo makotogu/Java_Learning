@@ -1,8 +1,8 @@
-package com.makotogu.c1c2c3;
+package com.makotogu.nio.c1c2c3;
 
 import java.nio.ByteBuffer;
 
-import static com.makotogu.c1c2c3.ByteBufferUtil.debugAll;
+import static com.makotogu.nio.c1c2c3.ByteBufferUtil.debugAll;
 
 public class TestByteBufferReadWrite {
     public static void main(String[] args) {
