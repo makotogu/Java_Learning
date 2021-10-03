@@ -28,7 +28,7 @@ public class SortCompare {
 //        testInsertion(integers);
 //        testShell(integers);
 //        testMerge(integers);
-//        testQuick(integers);
+        testQuick(integers);
         testStandardQuick(integers);
     }
 
