@@ -37,7 +37,7 @@ public class EventLoopServer {
                     }
 
                 })
-                .bind(1000);
+                .bind(8080);
 
     }
 

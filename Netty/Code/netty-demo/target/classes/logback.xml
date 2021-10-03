@@ -11,6 +11,12 @@
     <logger name="c" level="debug" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
+    <logger name="com.makotogu" level="debug" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <logger name="io.netty.handler.logging.LoggingHandler" level="debug" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
 
     <root level="ERROR">
         <appender-ref ref="STDOUT"/>
